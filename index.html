@@ -378,7 +378,6 @@ const PREFIX_ITEMS = [
   ['big',   'G', 'giga',  '9',   '1 000 000 000'],
   ['big',   'M', 'mega',  '6',   '1 000 000'],
   ['big',   'k', 'kilo',  '3',   '1000'],
-  ['extra', 'd', 'deci',  '-1',  '0.1'],
   ['extra', 'c', 'centi', '-2',  '0.01'],
   ['small', 'm', 'milli', '-3',  '0.001'],
   ['small', 'μ', 'micro', '-6',  '0.000 001'],
@@ -403,7 +402,7 @@ const PACKS = [
     families: [
       { id: 'big', name: 'Big prefixes', note: 'k M G', on: true },
       { id: 'small', name: 'Small prefixes', note: 'm μ n', on: true },
-      { id: 'extra', name: 'Centi & deci', note: 'c d' },
+      { id: 'extra', name: 'Centi', note: 'c' },
     ],
     directions: [
       { id: 'sp', label: 'Symbol → power', from: 'sym', to: 'pow', on: true },

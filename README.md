@@ -20,7 +20,7 @@ Open `index.html` in any browser. It's a single file, so there's no install or s
 | μ      | micro | ×10⁻⁶        | 0.000 001       |
 | n      | nano  | ×10⁻⁹        | 0.000 000 001   |
 
-Centi and deci are included as an optional extra group, off by default.
+Centi is included as an optional extra, off by default.
 
 Question types convert between any two of symbol, power of ten and number, in either direction
 (six types, all on by default). Name → symbol and symbol → name are also available.

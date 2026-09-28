@@ -205,11 +205,6 @@
   }
   .ans:hover:not(:disabled) { background: color-mix(in srgb, var(--marker) 22%, var(--tile)); }
   .ans:active:not(:disabled) { transform: translateY(4px); box-shadow: 0 1px 0 var(--edge); }
-  /* Number answers get wider buttons so 0.000 000 001 stays on one line */
-  .answers.wide { grid-template-columns: repeat(3, 1fr); }
-  .answers.wide .ans { font-size: clamp(17px, 2.8vw, 26px); white-space: nowrap; }
-  .prompt.long { font-size: clamp(30px, 7vw, 64px); }
-  .numv { word-spacing: -0.12em; }
   .pow { white-space: nowrap; }
   .ans.right { background: var(--good); color: #fff; }
   .ans.wrong { background: var(--bad-soft); color: var(--bad); border-color: var(--bad); box-shadow: 0 5px 0 var(--bad); cursor: default; opacity: .8; }
@@ -226,6 +221,35 @@
     font-family: var(--display); font-weight: 800; font-size: clamp(90px, 22vw, 200px); color: var(--blue);
     animation: pop .4s ease;
   }
+
+  /* ---------- Learn ---------- */
+  .learn-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .learn-head h2 { font-family: var(--display); font-weight: 800; font-size: 28px; margin: 0; line-height: 1.1; }
+  .learn-group { display: flex; flex-direction: column; gap: 10px; }
+  .learn-table { width: 100%; border-collapse: separate; border-spacing: 0 8px; margin-top: -8px; }
+  .learn-table th {
+    text-align: left; font-size: 12px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase;
+    color: var(--ink-soft); padding: 0 16px;
+  }
+  .learn-table td {
+    background: var(--paper); border-block: 2px solid var(--line); padding: 10px 16px; vertical-align: middle;
+  }
+  .learn-table td:first-child { border-left: 2px solid var(--line); border-radius: 12px 0 0 12px; width: 1%; }
+  .learn-table td:last-child { border-right: 2px solid var(--line); border-radius: 0 12px 12px 0; }
+  .l-sym {
+    width: 56px; height: 56px; border-radius: 12px; display: grid; place-items: center;
+    background: var(--marker); color: var(--marker-ink); border: 2px solid var(--edge); box-shadow: 0 3px 0 var(--edge);
+    font-weight: 700; font-size: 30px;
+  }
+  .l-name { font-family: var(--display); font-weight: 700; font-size: 24px; }
+  .l-pow { font-weight: 700; font-size: 28px; }
+  .l-tag { font-size: 13px; color: var(--ink-soft); margin-left: 6px; }
+  .l-base td { background: transparent; border-block-style: dashed; color: var(--ink-soft); }
+  .l-base td:first-child { border-left-style: dashed; }
+  .l-base td:last-child { border-right-style: dashed; }
+  .l-base .l-sym { background: transparent; color: var(--ink-soft); border-style: dashed; box-shadow: none; font-size: 18px; }
+  .l-base .l-name { font-family: var(--body); font-weight: 400; font-size: 16px; }
+  .l-base .l-pow { font-size: 22px; }
 
   /* ---------- Results ---------- */
   .results-top { display: grid; grid-template-columns: auto 1fr; gap: 24px; align-items: center; }
@@ -252,12 +276,14 @@
   @media (max-width: 620px) {
     .answers { grid-template-columns: repeat(3, 1fr); gap: 10px; }
     .ans { min-height: 72px; }
-    .answers.wide { grid-template-columns: repeat(2, 1fr); }
     .results-top { grid-template-columns: 1fr; justify-items: center; text-align: center; }
     .kv { justify-content: center; }
     .stat { min-width: 70px; padding: 4px 10px; }
     .stat b { font-size: 22px; }
     .big-btn { width: 100%; }
+    .start-row .actions { width: 100%; flex-direction: column; }
+    .learn-table td { padding: 8px 10px; }
+    .learn-table th { padding: 0 10px; }
   }
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation: none !important; transition: none !important; }
@@ -272,7 +298,7 @@
       <div class="brand-mark" aria-hidden="true">μ</div>
       <div>
         <h1>Prefix Tap</h1>
-        <p>Scientific prefixes: symbol, power of ten and number.</p>
+        <p>Scientific prefixes: symbol, name and power of ten.</p>
       </div>
     </div>
     <button class="icon-btn" id="sound-toggle" type="button" aria-pressed="true">Sound on</button>
@@ -299,9 +325,30 @@
       </div>
       <div class="start-row">
         <p class="hint" id="best-line"></p>
-        <button class="big-btn" id="start" type="button">Start</button>
+        <div class="actions">
+          <button class="ghost-btn" id="learn-btn" type="button">Learn the prefixes</button>
+          <button class="big-btn" id="start" type="button">Start</button>
+        </div>
       </div>
       <p class="warn" id="setup-warn" hidden>Pick at least one group of prefixes and one question type.</p>
+    </div>
+  </section>
+
+  <!-- LEARN -->
+  <section id="learn" class="wrap" hidden>
+    <div class="panel">
+      <div class="learn-head">
+        <h2>Learn the prefixes</h2>
+        <button class="ghost-btn" id="learn-back" type="button">Back</button>
+      </div>
+      <p class="hint" style="margin:0">A prefix in front of a unit multiplies it by a power of ten. For example, 5 km = 5 ×10<sup>3</sup> m.</p>
+      <table class="learn-table">
+        <thead><tr><th>Symbol</th><th>Name</th><th>Power of ten</th></tr></thead>
+        <tbody id="learn-rows"></tbody>
+      </table>
+      <div class="actions">
+        <button class="big-btn" id="learn-start" type="button">Start practising</button>
+      </div>
     </div>
   </section>
 
@@ -373,30 +420,28 @@ const frac = s => {
 };
 function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
 
-// [family, symbol, name, power, number]
+// [family, symbol, name, power] — largest to smallest
 const PREFIX_ITEMS = [
-  ['big',   'G', 'giga',  '9',   '1 000 000 000'],
-  ['big',   'M', 'mega',  '6',   '1 000 000'],
-  ['big',   'k', 'kilo',  '3',   '1000'],
-  ['extra', 'c', 'centi', '-2',  '0.01'],
-  ['small', 'm', 'milli', '-3',  '0.001'],
-  ['small', 'μ', 'micro', '-6',  '0.000 001'],
-  ['small', 'n', 'nano',  '-9',  '0.000 000 001'],
-].map(([family, sym, name, pow, num]) => ({ family, sym, name, pow, num }));
+  ['big',   'G', 'giga',  '9'],
+  ['big',   'M', 'mega',  '6'],
+  ['big',   'k', 'kilo',  '3'],
+  ['extra', 'c', 'centi', '-2'],
+  ['small', 'm', 'milli', '-3'],
+  ['small', 'μ', 'micro', '-6'],
+  ['small', 'n', 'nano',  '-9'],
+].map(([family, sym, name, pow]) => ({ family, sym, name, pow }));
 
 const powHtml = p => `<span class="pow">×10<sup>${esc(String(p).replace('-', '−'))}</sup></span>`;
-const numHtml = n => `<span class="numv">${esc(n)}</span>`;
 
 const PACKS = [
   {
     id: 'prefixes',
     name: 'Scientific prefixes',
-    blurb: 'Symbols, powers of ten and numbers, from nano to giga.',
-    example: `k = ${powHtml(3)} = 1000`,
+    blurb: 'Symbols, names and powers of ten, from nano to giga.',
+    example: `k = ${powHtml(3)}`,
     reps: {
       sym: { label: 'prefix symbol' },
       pow: { label: 'power of ten', kind: 'pow' },
-      num: { label: 'number', kind: 'num' },
       name: { label: 'prefix name' },
     },
     families: [
@@ -407,15 +452,13 @@ const PACKS = [
     directions: [
       { id: 'sp', label: 'Symbol → power', from: 'sym', to: 'pow', on: true },
       { id: 'ps', label: 'Power → symbol', from: 'pow', to: 'sym', on: true },
-      { id: 'sn', label: 'Symbol → number', from: 'sym', to: 'num', on: true },
-      { id: 'ns', label: 'Number → symbol', from: 'num', to: 'sym', on: true },
-      { id: 'pn', label: 'Power → number', from: 'pow', to: 'num', on: true },
-      { id: 'np', label: 'Number → power', from: 'num', to: 'pow', on: true },
-      { id: 'ms', label: 'Name → symbol', from: 'name', to: 'sym' },
-      { id: 'sm', label: 'Symbol → name', from: 'sym', to: 'name' },
+      { id: 'ms', label: 'Name → symbol', from: 'name', to: 'sym', on: true },
+      { id: 'sm', label: 'Symbol → name', from: 'sym', to: 'name', on: true },
+      { id: 'mp', label: 'Name → power', from: 'name', to: 'pow' },
+      { id: 'pm', label: 'Power → name', from: 'pow', to: 'name' },
     ],
     items: PREFIX_ITEMS,
-    summary: it => `${esc(it.sym)} <small style="width:auto;font-size:15px">${esc(it.name)}</small> = ${powHtml(it.pow)} = ${numHtml(it.num)}`,
+    summary: it => `${esc(it.sym)} <small style="width:auto;font-size:15px">${esc(it.name)}</small> = ${powHtml(it.pow)}`,
   },
 ];
 
@@ -441,10 +484,8 @@ const uniq = a => [...new Set(a)];
 const val = (f, it) => typeof f === 'function' ? f(it) : f;
 function render(pack, rep, s) {
   const kind = pack.reps[rep].kind;
-  return kind === 'frac' ? frac(s) : kind === 'pow' ? powHtml(s) : kind === 'num' ? numHtml(s) : esc(s);
+  return kind === 'frac' ? frac(s) : kind === 'pow' ? powHtml(s) : esc(s);
 }
-// Long numbers like 0.000 000 001 need a smaller font to fit
-const isLong = s => String(s).length > 9;
 
 /* ---------- setup state ---------- */
 let packId = store.get('pack', PACKS[0].id);
@@ -454,9 +495,10 @@ function cfgFor(pack) {
   if (!cfgs[pack.id]) {
     const saved = store.get('cfg:' + pack.id, null);
     const famIds = pack.families.map(f => f.id), dirIds = pack.directions.map(d => d.id);
+    const savedDirs = saved?.directions?.filter(d => dirIds.includes(d));
     cfgs[pack.id] = {
       families: saved?.families?.filter(f => famIds.includes(f)) ?? pack.families.filter(f => f.on).map(f => f.id),
-      directions: saved?.directions?.filter(d => dirIds.includes(d)) ?? pack.directions.filter(d => d.on).map(d => d.id),
+      directions: savedDirs?.length ? savedDirs : pack.directions.filter(d => d.on).map(d => d.id),
       time: saved?.time ?? 60,
     };
   }
@@ -538,7 +580,7 @@ function beep(kind) {
 /* ---------- game ---------- */
 let G = null;
 
-function show(id) { ['setup', 'game', 'results'].forEach(s => $(s).hidden = s !== id); }
+function show(id) { ['setup', 'learn', 'game', 'results'].forEach(s => $(s).hidden = s !== id); }
 
 function startGame() {
   const pack = currentPack(), cfg = cfgFor(pack);
@@ -629,11 +671,9 @@ function nextQuestion() {
   $('ask').textContent = dir.ask ? val(dir.ask, item) : `Find the ${pack.reps[dir.to].label}`;
   const p = $('prompt');
   p.innerHTML = dir.prompt ? val(dir.prompt, item) : render(pack, dir.from, item[dir.from]);
-  p.classList.toggle('long', isLong(item[dir.from]));
   p.classList.remove('pop'); void p.offsetWidth; p.classList.add('pop');
 
   const box = $('answers'); box.innerHTML = '';
-  box.classList.toggle('wide', pack.reps[dir.to].kind === 'num');
   buildOptions(item, dir).forEach(v => {
     const b = document.createElement('button');
     b.type = 'button'; b.className = 'ans';
@@ -702,6 +742,29 @@ function finish() {
   show('results');
 }
 
+/* ---------- learn ---------- */
+function renderLearn() {
+  const rows = PREFIX_ITEMS.map(it => `<tr>
+      <td><span class="l-sym">${esc(it.sym)}</span></td>
+      <td><span class="l-name">${esc(it.name)}</span>${it.family === 'extra' ? '<span class="l-tag">(extra)</span>' : ''}</td>
+      <td><span class="l-pow">${powHtml(it.pow)}</span></td>
+    </tr>`);
+  // Show where the plain unit (no prefix) sits between the big and small prefixes
+  const base = `<tr class="l-base">
+      <td><span class="l-sym">–</span></td>
+      <td><span class="l-name">no prefix</span></td>
+      <td><span class="l-pow">${powHtml(0)}</span></td>
+    </tr>`;
+  const firstSmall = PREFIX_ITEMS.findIndex(it => Number(it.pow) < 0);
+  rows.splice(firstSmall, 0, base);
+  $('learn-rows').innerHTML = rows.join('');
+  show('learn');
+  window.scrollTo(0, 0);
+}
+
+$('learn-btn').addEventListener('click', renderLearn);
+$('learn-back').addEventListener('click', () => { show('setup'); renderSetup(); });
+$('learn-start').addEventListener('click', startGame);
 $('start').addEventListener('click', startGame);
 $('again').addEventListener('click', startGame);
 $('end').addEventListener('click', () => { if (G && G.running) finish(); else if (G) { G = null; $('countdown').hidden = true; show('setup'); renderSetup(); } });

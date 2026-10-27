@@ -1,6 +1,9 @@
 # Prefix Tap
 
-A quick-fire "hit the button" game for the National 5 Physics scientific prefixes, from nano to giga.
+A quick-fire "hit the button" game for National 5 Physics, with two packs to choose from:
+
+- **Prefixes**: scientific prefixes, from nano to giga
+- **Circuit symbols**: the N5 electrical components, what they look like and what they do
 Built on the same engine as `Maths/FactTap`.
 
 Open `index.html` in any browser. It's a single file, so there's no install or server.
@@ -33,3 +36,16 @@ Wrong answers are re-asked three questions later. The results screen lists the p
 got wrong. Best scores are saved in the browser for each combination of settings.
 
 To change the prefixes, edit `PREFIX_ITEMS` in `index.html`.
+
+## Circuit symbols
+
+| Group | Components |
+|-------|-----------|
+| Basic components | cell, battery, lamp, switch, resistor, variable resistor, fuse, ammeter, voltmeter |
+| Input and output devices | LED, motor, microphone, loudspeaker, photovoltaic cell, thermistor, LDR |
+| Diodes, capacitors, transistors | diode, capacitor, NPN transistor, n-channel enhancement MOSFET |
+
+Symbol → name and name → symbol are on by default. What it does → name and name → what it does are
+also available. The symbols are drawn the same way as in the N5physics app's circuit diagrams, and the
+same pack is in `QuantityTap`. Each pack has its own **Learn** button. To change what's tested, edit
+`PREFIX_ITEMS` or `CIRCUIT_ITEMS` in `index.html` (circuit symbols are drawn in `CIRCUIT_DRAW`).
